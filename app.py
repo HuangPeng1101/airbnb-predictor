@@ -21,7 +21,12 @@ def load_model():
     url = "https://drive.google.com/uc?id=1yPmTtt-O8whqqLBr8_bzmmS8Cf5s7I2a"
     output = "rf_model.pkl"
     if not os.path.exists(output):
+        st.info("Downloading model from Google Drive...")
         gdown.download(url, output, quiet=False)
+        st.success("Download completed.")
+    if not os.path.exists(output) or os.path.getsize(output) < 100_000_000:
+        st.error("Model download may have failed or incomplete. Try rerunning the app.")
+        st.stop()
     return joblib.load(output)
 
 model = load_model()
