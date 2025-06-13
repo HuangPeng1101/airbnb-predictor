@@ -18,16 +18,23 @@ uploaded_file = st.file_uploader("Upload CSV File", type=["csv"])
 # 自动从 Google Drive 下载模型
 @st.cache_resource
 def load_model():
-    url = "https://drive.google.com/file/d/1yPmTtt-O8whqqLBr8_bzmmS8Cf5s7I2a/view?usp=drive_link"
+    url = "https://drive.google.com/file/d/1HVDUDq74DsL5hMRwcL9bFBK9wgJOvgZ-"  
     output = "rf_model.pkl"
     if not os.path.exists(output):
         st.info("Downloading model from Google Drive...")
         gdown.download(url, output, quiet=False)
         st.success("Download completed.")
-    if not os.path.exists(output) or os.path.getsize(output) < 100_000_000:
+    
+    if not os.path.exists(output):
         st.error("Model download may have failed or incomplete. Try rerunning the app.")
         st.stop()
-    return joblib.load(output)
+    
+    try:
+        return joblib.load(output)
+    except Exception as e:
+        st.error("Model load failed. Possibly corrupted or incompatible.")
+        st.exception(e)
+        st.stop()
 
 model = load_model()
 
